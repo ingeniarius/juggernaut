@@ -1,11 +1,16 @@
 require "tempfile"
 require "yui/compressor"
 require "fileutils"
+require "sprockets"
 
-APP_PATH = File.expand_path("./public/application.js")
+APP_PATH    = File.expand_path("./public/application.js")
+CLIENT_PATH = File.expand_path("./client.js")
 
 task :build do
-  `sprocketize -I public/ public/juggernaut.js > #{APP_PATH}`
+  env = Sprockets::Environment.new
+  env.append_path 'client/vendor/assets/javascripts'
+  File.open(APP_PATH, 'w') { |f| f << env['juggernaut.js'].to_s }
+  File.open(CLIENT_PATH, 'w') { |f| f << env['juggernaut.js'].to_s }
 end
 
 task :compress do
